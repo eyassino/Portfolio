@@ -1,0 +1,102 @@
+import './App.css';
+import * as React from 'react';
+import MainPage from './mainPage';
+import AlgorithmsPage from "./algorithmsPage";
+import {useState} from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import {Box, Typography} from "@mui/material";
+import PropTypes from "prop-types";
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`full-width-tabpanel-${index}`}
+            aria-labelledby={`full-width-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+    return {
+        id: `full-width-tab-${index}`,
+        'aria-controls': `full-width-tabpanel-${index}`,
+    };
+}
+
+function App() {
+
+    const [page, setPage] = useState('Home');
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+        if (newValue === 0) {
+            setPage('MainPage');
+        } else if (newValue === 1) {
+            setPage('AlgorithmsPage');
+        }
+    };
+
+    const renderPage = () => {
+        switch (page) {
+            case 'MainPage':
+                return <MainPage />;
+            case 'AlgorithmsPage':
+                return <AlgorithmsPage />;
+            default:
+                return <MainPage />;
+        }
+    };
+
+    return (
+        <div className="main-body">
+            <AppBar position="static">
+                <Toolbar sx={{ justifyContent: "space-between" }}>
+                    <div className="centered-name">Website by Emil Yassinov</div>
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        TabIndicatorProps={{
+                            style: {
+                                backgroundColor: "white"
+                            }
+                        }}
+                        textColor="inherit"
+                        aria-label="full width tabs example"
+                    >
+                        <Tab label="Main Page" {...a11yProps(0)} />
+                        <Tab label="Algorithm Project" {...a11yProps(1)} />
+                    </Tabs>
+                    <div>
+                        <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
+                        <Button variant="outlined" href="mailto:emil.yassinov@gmail.com" color="inherit">Email: emil.yassinov@gmail.com</Button>
+                    </div>
+                </Toolbar>
+            </AppBar>
+            {renderPage()}
+        </div>
+    );
+}
+
+export default App;
