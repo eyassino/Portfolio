@@ -2,6 +2,7 @@ import './App.css';
 import * as React from 'react';
 import {useEffect, useRef, useState} from "react";
 import Button from "@mui/material/Button";
+import {Box, Slider, Typography} from "@mui/material";
 
 function AlgorithmsPage() {
     let cols;
@@ -25,6 +26,7 @@ function AlgorithmsPage() {
     const [startRow, setStartRow] = useState(Math.floor(rows/2));
     const [endCol, setEndCol] = useState(Math.floor(cols/1.2));
     const [endRow, setEndRow] = useState(Math.floor(rows/2));
+    const [animSpeed, setAnimSpeed] = useState(4);
 
     useEffect(() => {
         // Setting the start box at a specific position
@@ -131,13 +133,9 @@ function AlgorithmsPage() {
         );
     }
 
-    function sleep(){
-        return new Promise(resolve => setTimeout(resolve, 5));
-    }
-
     async function bfs() {
-        setAlgRunning(true);
-        const directions = [
+        setAlgRunning(true); // This is to stop all actions from being made during alg animation
+        const directions = [ // All possible directions (this one does not move diagonally)
             [0, 1],
             [1, 0],
             [0, -1],
@@ -146,51 +144,61 @@ function AlgorithmsPage() {
 
         const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
         const queue = [];
-        queue.push([startRow, startCol, [[startRow, startCol]]]); // Initial state
+        queue.push([startRow, startCol, [[startRow, startCol]]]); // Initiate
 
         visited[startRow][startCol] = true;
 
-        while (queue.length > 0) {
-            // Dequeue
-            const [currentRow, currentCol, pathSoFar] = queue.shift();
+        const algStep = () => {
+            for(let i = 0; i < animSpeed; i++) { // This is so the user can decide how fast the animation is
+                if (queue.length === 0) {        // It is achieved by running multiple steps at once
+                    setAlgRunning(false);
+                    return;
+                }
 
-            // Check if target reached, if yes send it
-            if (grid[currentRow][currentCol]?.type === "destination") {
-                await pathFound(pathSoFar);
-                return;
-            }
+                // Dequeue
+                const [currentRow, currentCol, pathSoFar] = queue.shift();
 
-            // Explore neighbors in all 4 directions
-            for (const [dr, dc] of directions) {
-                const newRow = currentRow + dr;
-                const newCol = currentCol + dc;
+                // Check if target reached, if yes send it
+                if (grid[currentRow][currentCol]?.type === "destination") {
+                    pathFound(pathSoFar);
+                    return;
+                }
 
-                if (
-                    newRow >= 0 && newRow < rows &&
-                    newCol >= 0 && newCol < cols &&
-                    !visited[newRow][newCol] &&
-                    grid[newRow][newCol]?.type !== "selected"
-                ) {
-                    if (grid[newRow][newCol]?.type !== "destination") {
-                        setCell(newRow, newCol, "algSeen");
+                // Explore neighbors in all 4 directions
+                for (const [dr, dc] of directions) {
+                    const newRow = currentRow + dr;
+                    const newCol = currentCol + dc;
+
+                    if (
+                        newRow >= 0 && newRow < rows &&
+                        newCol >= 0 && newCol < cols &&
+                        !visited[newRow][newCol] &&
+                        grid[newRow][newCol]?.type !== "selected"
+                    ) {
+                        if (grid[newRow][newCol]?.type !== "destination") {
+                            setCell(newRow, newCol, "algSeen");
+                        }
+                        visited[newRow][newCol] = true;
+                        queue.push([newRow, newCol, [...pathSoFar, [newRow, newCol]]]);
                     }
-                    visited[newRow][newCol] = true;
-                    queue.push([newRow, newCol, [...pathSoFar, [newRow, newCol]]]);
                 }
             }
-            await sleep();
-        }
+            requestAnimationFrame(algStep);
+        };
 
-        setAlgRunning(false);
-        return []; // No path found
+        algStep();
+    }
+
+    function sleep(){
+        return new Promise(resolve => setTimeout(resolve, 5));
     }
 
     async function pathFound(path) {
         for(const [row, col] of path) {
             if(grid[row][col]?.type !== "destination" && grid[row][col]?.type !== "start") {
                 setCell(row, col, "path");
-                await sleep();
             }
+            await sleep(); // delaying the path painting like in the algorithm, but with in an easier way
         }
         setAlgRunning(false);
     }
@@ -209,6 +217,10 @@ function AlgorithmsPage() {
                 })
             )
         );
+    };
+
+    const handleSlider = (event, newValue) => {
+        setAnimSpeed(newValue);
     };
 
     return (
@@ -235,10 +247,30 @@ function AlgorithmsPage() {
                     })
                 )}
             </div>
-            <div>
-                <Button onClick={bfs}>Run BFS</Button>
-                <Button onClick={resetGrid}>Clear</Button>
-            </div>
+            <Box sx={{ display: '-webkit-box'}}>
+                <Box sx={{ width: 250, marginRight: 1 + 'em'}}>
+                    <Slider
+                        aria-label="Animation speed"
+                        defaultValue={4}
+                        shiftStep={2}
+                        step={1}
+                        marks
+                        min={1}
+                        max={10}
+                        onChange={handleSlider}
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography>
+                            Slow
+                        </Typography>
+                        <Typography>
+                            Fast
+                        </Typography>
+                    </Box>
+                </Box>
+                <Button style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
+                <Button variant="outlined" color="inherit" onClick={resetGrid}>Clear</Button>
+            </Box>
         </div>
     );
 }
