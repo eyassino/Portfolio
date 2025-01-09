@@ -20,8 +20,6 @@ function AlgorithmsPage() {
     const [isDrawing, setIsDrawing] = useState(false);
     const [isMovingStart, setIsMovingStart] = useState(false);
     const [isMovingEnd, setIsMovingEnd] = useState(false);
-    const changedDuringDrag = useRef(new Set());
-    const [algRunning, setAlgRunning] = useState(false);
     const [startCol, setStartCol] = useState(Math.floor(cols/5));
     const [startRow, setStartRow] = useState(Math.floor(rows/2));
     const [endCol, setEndCol] = useState(Math.floor(cols/1.2));
@@ -29,6 +27,13 @@ function AlgorithmsPage() {
     const [animSpeed, setAnimSpeed] = useState(4);
     const [hoveredRow, setHoveredRow] = useState(null);
     const [hoveredCol, setHoveredCol] = useState(null);
+
+    const changedDuringDrag = useRef(new Set());
+    const algRunningRef = useRef(false);
+
+    const setAlgRunningRef = (bool) => {
+        algRunningRef.current = bool;
+    };
 
     useEffect(() => {
         // Setting the start box at a specific position
@@ -96,7 +101,8 @@ function AlgorithmsPage() {
     };
 
     const handleMouseDown = (row, col) => {
-        if(!algRunning) {
+        if(!algRunningRef.current) {
+            softResetGrid();
             if(grid[row][col]?.type === "start") {
                 setIsMovingStart(true);
                 setCell(row, col, "");
@@ -171,8 +177,9 @@ function AlgorithmsPage() {
         );
     }
 
-    async function bfs() {
-        setAlgRunning(true); // This is to stop all actions from being made during alg animation
+    function bfs() {
+        setAlgRunningRef(true); // Need a useRef to get instant changes
+        softResetGrid();
         const directions = [ // All possible directions (this one does not move diagonally)
             [0, 1],
             [1, 0],
@@ -187,9 +194,10 @@ function AlgorithmsPage() {
         visited[startRow][startCol] = true;
 
         const algStep = () => {
-            for(let i = 0; i < animSpeed; i++) { // This is so the user can decide how fast the animation is
-                if (queue.length === 0) {        // It is achieved by running multiple steps at once
-                    setAlgRunning(false);
+            for(let i = 0; i < animSpeed; i++) {    // This is so the user can decide how fast the animation is
+                console.log(algRunningRef.current);
+                if (queue.length === 0 || !algRunningRef.current) {    // It is achieved by running multiple steps at once
+                    setAlgRunningRef(false);
                     return;
                 }
 
@@ -198,7 +206,7 @@ function AlgorithmsPage() {
 
                 // Check if target reached, if yes send it
                 if (grid[currentRow][currentCol]?.type === "destination") {
-                    pathFound(pathSoFar);
+                    void pathFound(pathSoFar);
                     return;
                 }
 
@@ -233,15 +241,19 @@ function AlgorithmsPage() {
 
     async function pathFound(path) {
         for(const [row, col] of path) {
+            if (!algRunningRef.current) { // If user stopped alg, don't do the path, doubt this will be used tho
+                return;
+            }
             if(grid[row][col]?.type !== "destination" && grid[row][col]?.type !== "start") {
                 setCell(row, col, "path");
             }
             await sleep(); // delaying the path painting like in the algorithm, but with in an easier way
         }
-        setAlgRunning(false);
+        setAlgRunningRef(false);
     }
 
     const resetGrid = () => {
+        setAlgRunningRef(false);
         setGrid(
             Array.from({ length: rows }, (_, rowIndex) =>
                 Array.from({ length: cols }, (_, colIndex) => {
@@ -253,6 +265,16 @@ function AlgorithmsPage() {
                         return { type: null };
                     }
                 })
+            )
+        );
+    };
+
+    const softResetGrid = () => {
+        setGrid((prevGrid) =>
+            prevGrid.map((row) =>
+                row.map((box) =>
+                    box.type === "algSeen" || box.type === "path" ? { ...box, type: null } : box,
+                )
             )
         );
     };
@@ -314,7 +336,7 @@ function AlgorithmsPage() {
                         </Typography>
                     </Box>
                 </Box>
-                <Button style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
+                <Button disabled={algRunningRef.current} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
                 <Button variant="outlined" color="inherit" onClick={resetGrid}>Clear</Button>
             </Box>
         </div>
