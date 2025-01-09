@@ -27,6 +27,8 @@ function AlgorithmsPage() {
     const [endCol, setEndCol] = useState(Math.floor(cols/1.2));
     const [endRow, setEndRow] = useState(Math.floor(rows/2));
     const [animSpeed, setAnimSpeed] = useState(4);
+    const [hoveredRow, setHoveredRow] = useState(null);
+    const [hoveredCol, setHoveredCol] = useState(null);
 
     useEffect(() => {
         // Setting the start box at a specific position
@@ -76,6 +78,9 @@ function AlgorithmsPage() {
             setStartRow(row);
             setStartCol(col);
         }
+        else{
+            setCell(startRow, startCol, "start");
+        }
     };
 
     const moveEnd = (row, col) => {
@@ -85,15 +90,20 @@ function AlgorithmsPage() {
             setEndRow(row);
             setEndCol(col);
         }
+        else{
+            setCell(startRow, startCol, "destination");
+        }
     };
 
     const handleMouseDown = (row, col) => {
         if(!algRunning) {
             if(grid[row][col]?.type === "start") {
                 setIsMovingStart(true);
+                setCell(row, col, "");
             }
             else if(grid[row][col]?.type === "destination") {
                 setIsMovingEnd(true);
+                setCell(row, col, "");
             }
             else {
                 setIsDrawing(true);
@@ -103,22 +113,50 @@ function AlgorithmsPage() {
     };
 
     const handleMouseEnter = (row, col) => {
+        setHoveredRow(row);
+        setHoveredCol(col);
+
         if (isDrawing && !changedDuringDrag.current.has(`${row}-${col}`)) {
             toggleBox(row, col);
         }
+    };
+
+    const handleMouseUp = (row, col) => {
+        if (row > rows && col > cols){
+            if (isMovingStart){
+                moveStart(startRow, startCol);
+            }
+            else if (isMovingEnd){
+                moveEnd(endRow, endCol);
+            }
+        }
         else if (isMovingStart){
             moveStart(row, col);
+            setIsMovingStart(false);
         }
         else if (isMovingEnd){
             moveEnd(row, col);
+            setIsMovingEnd(false);
         }
+        setIsDrawing(false);
+        changedDuringDrag.current.clear();
     };
 
-    const handleMouseUp = () => {
-        setIsDrawing(false);
-        setIsMovingEnd(false);
-        setIsMovingStart(false);
-        changedDuringDrag.current.clear();
+    const handleMouseLeave = () => {
+        if (isMovingStart){
+            moveStart(startRow, startCol);
+            setIsMovingStart(false);
+        }
+        else if (isMovingEnd){
+            moveEnd(endRow, endCol);
+            setIsMovingEnd(false);
+        }
+        else{
+            setIsDrawing(false);
+            changedDuringDrag.current.clear();
+        }
+        setHoveredRow(null);
+        setHoveredCol(null);
     };
 
     function setCell(x,y,type){
@@ -230,7 +268,7 @@ function AlgorithmsPage() {
                 style={{
                     gridTemplateColumns: `repeat(${cols}, 1fr)`,
                 }}
-                onMouseLeave={handleMouseUp} // Stop drawing if the mouse leaves the grid
+                onMouseLeave={handleMouseLeave} // Stop drawing if the mouse leaves the grid
             >
                 {grid.map((row, rowIndex) =>
                     row.map((box, colIndex) => {
@@ -239,9 +277,17 @@ function AlgorithmsPage() {
                             <div
                                 key={`${rowIndex}-${colIndex}`}
                                 className={`box ${boxClass}`}
+                                style={{
+                                    backgroundColor:
+                                        isMovingStart && rowIndex === hoveredRow && colIndex === hoveredCol
+                                            ? "purple"
+                                            : isMovingEnd && rowIndex === hoveredRow && colIndex === hoveredCol
+                                                ? "darkgreen"
+                                                : undefined,
+                                }}
                                 onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                                 onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
-                                onMouseUp={handleMouseUp}
+                                onMouseUp={() => handleMouseUp(rowIndex, colIndex)}
                             ></div>
                         );
                     })
