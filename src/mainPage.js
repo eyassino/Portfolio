@@ -9,7 +9,7 @@ function MidText() {
             <p>
                 In this website you will find some personal projects that I worked on, I will be adding more as I finish them.
                 Currently there is only the algorithm search project available, you can find it by clicking on the button at the top toolbar.
-                Thanks for checking this page out :)
+                Thanks for checking this page out and please don't hesitate to reach out :)
             </p>
         </div>
     );
@@ -24,14 +24,12 @@ function MainPage() {
 
     return (
         <div className="App">
-            <header className="main-header">
-                <div className="default-padding">
-                    <TypingText typingDone={showInfoBox}/>
-                </div>
-                {typingIsDone && (
-                    <MidText/>
-                )}
-            </header>
+            <div className="default-padding">
+                <TypingText typingDone={showInfoBox}/>
+            </div>
+            {typingIsDone && (
+                <MidText/>
+            )}
         </div>
     );
 }

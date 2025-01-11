@@ -27,13 +27,15 @@ function AlgorithmsPage() {
     const [animSpeed, setAnimSpeed] = useState(4);
     const [hoveredRow, setHoveredRow] = useState(null);
     const [hoveredCol, setHoveredCol] = useState(null);
+    const [algRunning, setAlgRunning] = useState(false);
 
     const changedDuringDrag = useRef(new Set());
     const algRunningRef = useRef(false);
 
     const setAlgRunningRef = (bool) => { // Used for disabling functionality to not break stuff
         algRunningRef.current = bool;
-    };
+        setAlgRunning(bool); // This is here because for some reason react does not render when ref is updated, but does
+    };                      // when useState is updated, so for buttons to not be disabled we need to use state rather than ref
 
     useEffect(() => {
         // Setting the start box at a specific position
@@ -365,7 +367,7 @@ function AlgorithmsPage() {
     }
 
     return (
-        <div className="main-body">
+        <div>
             <div
                 className="algorithm-box"
                 style={{
@@ -383,9 +385,9 @@ function AlgorithmsPage() {
                                 style={{
                                     backgroundColor:
                                         isMovingStart && rowIndex === hoveredRow && colIndex === hoveredCol
-                                            ? "purple"
+                                            ? "darkgreen"
                                             : isMovingEnd && rowIndex === hoveredRow && colIndex === hoveredCol
-                                                ? "darkgreen"
+                                                ? "darkred"
                                                 : undefined,
                                 }}
                                 onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
@@ -396,7 +398,7 @@ function AlgorithmsPage() {
                     })
                 )}
             </div>
-            <Box sx={{ display: '-webkit-box'}}>
+            <Box justifyContent="center" sx={{ display: '-webkit-box'}}>
                 <Box sx={{ width: 250, marginRight: 1 + 'em'}}>
                     <Slider
                         aria-label="Animation speed"
@@ -417,8 +419,8 @@ function AlgorithmsPage() {
                         </Typography>
                     </Box>
                 </Box>
-                <Button disabled={algRunningRef.current} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
-                <Button disabled={algRunningRef.current} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={mazeCreator}>Generate maze</Button>
+                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
+                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={mazeCreator}>Generate maze</Button>
                 <Button variant="outlined" color="inherit" onClick={resetGrid}>Clear</Button>
             </Box>
         </div>

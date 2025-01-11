@@ -18,6 +18,7 @@ code {
 }
 
 .main-body {
+    overflow-x: hidden;
     background-color: #36454F;
     min-height: 100vh;
     display: flex;
@@ -107,11 +108,11 @@ code {
 }
 
 .box.destination {
-    background-color: darkgreen;
+    background-color: darkred;
 }
 
 .box.start {
-    background: purple;
+    background: darkgreen;
 }
 
 .box.path {
