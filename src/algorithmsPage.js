@@ -31,7 +31,7 @@ function AlgorithmsPage() {
     const changedDuringDrag = useRef(new Set());
     const algRunningRef = useRef(false);
 
-    const setAlgRunningRef = (bool) => {
+    const setAlgRunningRef = (bool) => { // Used for disabling functionality to not break stuff
         algRunningRef.current = bool;
     };
 
@@ -195,7 +195,7 @@ function AlgorithmsPage() {
 
         const algStep = () => {
             for(let i = 0; i < animSpeed; i++) {    // This is so the user can decide how fast the animation is
-                console.log(algRunningRef.current);
+
                 if (queue.length === 0 || !algRunningRef.current) {    // It is achieved by running multiple steps at once
                     setAlgRunningRef(false);
                     return;
@@ -269,7 +269,7 @@ function AlgorithmsPage() {
         );
     };
 
-    const softResetGrid = () => {
+    const softResetGrid = () => { // Reset but don't touch the walls
         setGrid((prevGrid) =>
             prevGrid.map((row) =>
                 row.map((box) =>
@@ -282,6 +282,87 @@ function AlgorithmsPage() {
     const handleSlider = (event, newValue) => {
         setAnimSpeed(newValue);
     };
+
+    function fillGrid (){ // Used for making the maze, since this algorithm works by breaking walls rather than putting them up
+        setGrid(
+            Array.from({ length: rows }, (_, rowIndex) =>
+                Array.from({ length: cols }, (_, colIndex) => {
+                    if (rowIndex === startRow && colIndex === startCol) {
+                        return { type: "start" };
+                    } else if (rowIndex === endRow && colIndex === endCol) {
+                        return { type: "destination" };
+                    } else {
+                        return { type: "selected" };
+                    }
+                })
+            )
+        );
+        setCell(endRow, endCol+1, ""); // I don't like doing this but
+        setCell(endRow+1, endCol, ""); // Without this some mazes are unsolvable
+        setCell(endRow, endCol-1, ""); // Since the alg reaches the end and then
+        setCell(endRow-1, endCol, ""); // is unable to break walls it makes parts unreachable
+    }                                          // this makes it so it is guaranteed to reach it at least
+                                               // Could make a path then a maze around it, but I don't like that either
+    function mazeCreator () {
+        setAlgRunningRef(true); // Need a useRef to get instant changes
+        softResetGrid();
+        fillGrid();
+        const directions = [ // All possible directions (this one does not move diagonally)
+            [0, 2],                // Increments of two to avoid overwriting things
+            [2, 0],
+            [0, -2],
+            [-2, 0]
+        ];
+
+        const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+        const stack = [];
+        stack.push([startRow, startCol]); // Initiate
+        visited[startRow][startCol] = true;
+
+        const algStep = () => {
+            for(let i = 0; i < Math.ceil(animSpeed/2); i++) { // This is so the user can decide how fast the animation is
+                if (stack.length === 0 || !algRunningRef.current) {     // It is achieved by running multiple steps at once
+                    setAlgRunningRef(false);                    // division by 2 since it is quite fast if not divided
+                    return;
+                }
+
+                const [currentRow, currentCol] = stack[stack.length - 1];
+
+                // This is for the algorithm to know which cells are unvisited, used to know which "walls" not to break
+                const neighbors = directions
+                    .map(([dr, dc]) => [currentRow + dr, currentCol + dc])
+                    .filter(([newRow, newCol]) =>
+                        newRow >= 0 && newRow < rows &&
+                        newCol >= 0 && newCol < cols &&
+                        !visited[newRow][newCol]
+                    );
+
+
+                if (neighbors.length > 0) {
+                    // Pick a random neighbor
+                    const [newRow, newCol] = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    const wallRow = (currentRow + newRow) / 2;
+                    const wallCol = (currentCol + newCol) / 2;
+
+                    // Mark the wall and the new cell as visited and part of the maze
+                    if (grid[newRow][newCol]?.type !== "destination" && grid[wallRow][wallCol]?.type !== "destination") {
+                        setCell(wallRow, wallCol, "");
+                        setCell(newRow, newCol, "");
+                    }
+                    visited[wallRow][wallCol] = true;
+                    visited[newRow][newCol] = true;
+
+                    // Add the new cell to the stack
+                    stack.push([newRow, newCol]);
+                } else {
+                    stack.pop(); // Backtrack if no unvisited neighbors remain
+                }
+            }
+            requestAnimationFrame(algStep);
+        };
+
+        algStep();
+    }
 
     return (
         <div className="main-body">
@@ -337,6 +418,7 @@ function AlgorithmsPage() {
                     </Box>
                 </Box>
                 <Button disabled={algRunningRef.current} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
+                <Button disabled={algRunningRef.current} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={mazeCreator}>Generate maze</Button>
                 <Button variant="outlined" color="inherit" onClick={resetGrid}>Clear</Button>
             </Box>
         </div>
