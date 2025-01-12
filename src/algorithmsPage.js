@@ -24,18 +24,23 @@ function AlgorithmsPage() {
     const [startRow, setStartRow] = useState(Math.floor(rows/2));
     const [endCol, setEndCol] = useState(Math.floor(cols/1.2));
     const [endRow, setEndRow] = useState(Math.floor(rows/2));
-    const [animSpeed, setAnimSpeed] = useState(4);
     const [hoveredRow, setHoveredRow] = useState(null);
     const [hoveredCol, setHoveredCol] = useState(null);
     const [algRunning, setAlgRunning] = useState(false);
 
     const changedDuringDrag = useRef(new Set());
     const algRunningRef = useRef(false);
+    const animSpeedRef = useRef(4);
 
     const setAlgRunningRef = (bool) => { // Used for disabling functionality to not break stuff
         algRunningRef.current = bool;
         setAlgRunning(bool); // This is here because for some reason react does not render when ref is updated, but does
     };                      // when useState is updated, so for buttons to not be disabled we need to use state rather than ref
+
+
+    const setAnimSpeedRef = (val) => {
+        animSpeedRef.current = val;
+    };
 
     useEffect(() => {
         // Setting the start box at a specific position
@@ -196,7 +201,7 @@ function AlgorithmsPage() {
         visited[startRow][startCol] = true;
 
         const algStep = () => {
-            for(let i = 0; i < animSpeed; i++) {    // This is so the user can decide how fast the animation is
+            for(let i = 0; i < animSpeedRef.current; i++) {    // This is so the user can decide how fast the animation is
 
                 if (queue.length === 0 || !algRunningRef.current) {    // It is achieved by running multiple steps at once
                     setAlgRunningRef(false);
@@ -282,7 +287,7 @@ function AlgorithmsPage() {
     };
 
     const handleSlider = (event, newValue) => {
-        setAnimSpeed(newValue);
+        setAnimSpeedRef(newValue);
     };
 
     function fillGrid (){ // Used for making the maze, since this algorithm works by breaking walls rather than putting them up
@@ -322,7 +327,7 @@ function AlgorithmsPage() {
         visited[startRow][startCol] = true;
 
         const algStep = () => {
-            for(let i = 0; i < Math.ceil(animSpeed/2); i++) { // This is so the user can decide how fast the animation is
+            for(let i = 0; i < Math.ceil(animSpeedRef.current/2); i++) { // This is so the user can decide how fast the animation is
                 if (stack.length === 0 || !algRunningRef.current) {     // It is achieved by running multiple steps at once
                     setAlgRunningRef(false);                    // division by 2 since it is quite fast if not divided
                     return;
