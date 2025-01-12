@@ -118,3 +118,18 @@ code {
 .box.path {
     background: #2196F3;
 }
+
+.popup {
+    position: fixed;
+    top: 20%;
+    left: 20%;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.7);
+    cursor: default;
+    font-size: 60%;
+    font-family: Verdana;
+    user-select:none !important;
+}

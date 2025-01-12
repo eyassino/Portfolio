@@ -27,6 +27,7 @@ function AlgorithmsPage() {
     const [hoveredRow, setHoveredRow] = useState(null);
     const [hoveredCol, setHoveredCol] = useState(null);
     const [algRunning, setAlgRunning] = useState(false);
+    const [instructionsHidden, setInstructionsHidden] = useState(false);
 
     const changedDuringDrag = useRef(new Set());
     const algRunningRef = useRef(false);
@@ -85,7 +86,7 @@ function AlgorithmsPage() {
 
     const moveStart = (row, col) => {
         if(grid[row][col]?.type !== "destination") {
-            setCell(startRow, startCol, "");
+            setCell(startRow, startCol, "", true);
             setCell(row, col, "start");
             setStartRow(row);
             setStartCol(col);
@@ -97,7 +98,7 @@ function AlgorithmsPage() {
 
     const moveEnd = (row, col) => {
         if(grid[row][col]?.type !== "start") {
-            setCell(endRow, endCol, "");
+            setCell(endRow, endCol, "", true);
             setCell(row, col, "destination");
             setEndRow(row);
             setEndCol(col);
@@ -112,11 +113,11 @@ function AlgorithmsPage() {
             softResetGrid();
             if(grid[row][col]?.type === "start") {
                 setIsMovingStart(true);
-                setCell(row, col, "");
+                setCell(row, col, "", true);
             }
             else if(grid[row][col]?.type === "destination") {
                 setIsMovingEnd(true);
-                setCell(row, col, "");
+                setCell(row, col, "", true);
             }
             else {
                 setIsDrawing(true);
@@ -172,7 +173,10 @@ function AlgorithmsPage() {
         setHoveredCol(null);
     };
 
-    function setCell(x,y,type){
+    function setCell(x,y,type,vital = false){
+        if((grid[x][y]?.type === "start" || grid[x][y]?.type === "destination") && !vital){
+            return;
+        }
         setGrid((prevGrid) =>
             prevGrid.map((r, i) =>
                 i === x
@@ -371,8 +375,33 @@ function AlgorithmsPage() {
         algStep();
     }
 
+    const handleHideButton = () => {
+        setInstructionsHidden(true)
+    }
+
     return (
         <div>
+            <div hidden={instructionsHidden}
+                className="popup"
+                style={{
+                    placeContent: "center"
+                }}
+            >
+                <header>
+                    <h2>Instructions
+                        <Button variant="outlined" color="inherit" style={{marginLeft: 1 + 'em'}} onClick={handleHideButton}>Hide</Button>
+                    </h2>
+                </header>
+                <p>Click and drag to draw "walls" that act as blockers to the algorithm, click and drag again to remove them.
+                    <br/>The
+                    <span style={{color: "green"}}> green </span>
+                    cell is the start,
+                    <span style={{color: "red"}}> red </span>
+                    is the end, you can move them both by click and dragging them.
+                    <br/>Control the animation speed by using the slider.
+                    <br/>Run the pathfinding / maze generator algorithm by clicking the respective buttons at the bottom
+                </p>
+            </div>
             <div
                 className="algorithm-box"
                 style={{
