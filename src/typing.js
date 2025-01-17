@@ -10,7 +10,7 @@ const TypingText = ({
   const [showCursor, setShowCursor] = useState(true); // Blinking cursor state
 
   const eraseText = "Hello! My nam";
-  const finalText = "Hey! Welcome to my website";
+  const finalText = "Hey! Welcome.";
   const speed = 60;
   const eraseSpeed = 40;
   const pauseTime = 600;

@@ -8,7 +8,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import {Box, Typography} from "@mui/material";
+import {Alert, Box, Snackbar, Typography} from "@mui/material";
 import PropTypes from "prop-types";
 
 function TabPanel(props) {
@@ -69,28 +69,57 @@ function App() {
         }
     };
 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    const handleEmailPress = () => {
+        navigator.clipboard.writeText("emil.yassinov@gmail.com");
+        setSnackbarOpen(true);
+    }
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    }
+
     return (
         <div className="main-body">
             <AppBar position="static">
                 <Toolbar sx={{ justifyContent: "space-between" }}>
-                    <div className="centered-name">Website by Emil Yassinov</div>
-                    <Tabs
-                        value={value}
-                        onChange={handleChange}
-                        TabIndicatorProps={{
-                            style: {
-                                backgroundColor: "white"
-                            }
-                        }}
-                        textColor="inherit"
-                        aria-label="full width tabs example"
-                    >
-                        <Tab label="Main Page" {...a11yProps(0)} />
-                        <Tab label="Algorithm Project" {...a11yProps(1)} />
-                    </Tabs>
+                    <div className="centered-name">Emil Yassinov</div>
+
+                    <div style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
+                        <Tabs
+                            sx={{ justifyContent: "space-between" }}
+                            value={value}
+                            onChange={handleChange}
+                            TabIndicatorProps={{
+                                style: {
+                                    backgroundColor: "white"
+                                }
+                            }}
+                            textColor="inherit"
+                            aria-label="full width tabs example"
+                        >
+                            <Tab label="Main Page" {...a11yProps(0)} />
+                            <Tab label="Algorithm Project" {...a11yProps(1)} />
+                        </Tabs>
+                    </div>
                     <div>
                         <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
-                        <Button variant="outlined" href="mailto:emil.yassinov@gmail.com" color="inherit">Email: emil.yassinov@gmail.com</Button>
+                        <Button variant="outlined" onClick={handleEmailPress} color="inherit">Email: emil.yassinov@gmail.com</Button>
+                            <Snackbar
+                                open={snackbarOpen}
+                                onClose={handleSnackbarClose}
+                                autoHideDuration={1000}
+                                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                                style={{
+                                    position: "absolute",
+                                    top: "110%",
+                                }}
+                            >
+                                <Alert icon={false}>
+                                    Copied!
+                                </Alert>
+                            </Snackbar>
                     </div>
                 </Toolbar>
             </AppBar>
