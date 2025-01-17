@@ -9,7 +9,7 @@ function MidText() {
             <p>
                 In this website you will find some personal projects that I worked on, I will be adding more as I finish them.
                 Currently there is only the algorithm search project available, you can find it by clicking on the button at the top toolbar.
-                Thanks for checking this page out and please don't hesitate to reach out :)
+                <br/><br/>Thanks for checking this page out and please don't hesitate to reach out :)
             </p>
         </div>
     );

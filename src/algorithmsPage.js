@@ -2,7 +2,7 @@ import './App.css';
 import * as React from 'react';
 import {useEffect, useRef, useState} from "react";
 import Button from "@mui/material/Button";
-import {Box, Slider, Typography} from "@mui/material";
+import {Box, Menu, MenuItem, Slider, Typography} from "@mui/material";
 
 function AlgorithmsPage() {
     let cols;
@@ -14,7 +14,9 @@ function AlgorithmsPage() {
     cols = Math.floor(windowWidth / boxSize / 1.5);
     rows = Math.floor(windowHeight / boxSize / 1.5);
     const [grid, setGrid] = useState(
-        Array.from({length: rows}, () => Array(cols).fill(false))
+        Array.from({ length: rows }, () =>
+            Array.from({ length: cols }, () => ({ type: null }))
+        )
     );
 
     const [isDrawing, setIsDrawing] = useState(false);
@@ -173,19 +175,15 @@ function AlgorithmsPage() {
         setHoveredCol(null);
     };
 
-    function setCell(x,y,type,vital = false){
-        if((grid[x][y]?.type === "start" || grid[x][y]?.type === "destination") && !vital){
+    function setCell(x, y, type, vital = false) {
+        if ((grid[x]?.[y]?.type === "start" || grid[x]?.[y]?.type === "destination") && !vital) {
             return;
         }
-        setGrid((prevGrid) =>
-            prevGrid.map((r, i) =>
-                i === x
-                    ? r.map((box, j) =>
-                        j === y ? { ...box, type: type } : box
-                    )
-                    : r
-            )
-        );
+        setGrid((prevGrid) => {
+            const newGrid = prevGrid.map((row) => [...row]); // Copy rows to avoid mutating state directly
+            newGrid[x][y] = { ...newGrid[x][y], type: type };             // Update only the targeted cell
+            return newGrid;                                               // Return the updated grid
+        });
     }
 
     function bfs() {
@@ -308,13 +306,8 @@ function AlgorithmsPage() {
                 })
             )
         );
-        setCell(endRow, endCol+1, ""); // I don't like doing this but
-        setCell(endRow+1, endCol, ""); // Without this some mazes are unsolvable
-        setCell(endRow, endCol-1, ""); // Since the alg reaches the end and then
-        setCell(endRow-1, endCol, ""); // is unable to break walls it makes parts unreachable
-    }                                          // this makes it so it is guaranteed to reach it at least
-                                               // Could make a path then a maze around it, but I don't like that either
-    function mazeCreator () {
+    }
+    function mazeCreator () { // Uses backtracking algorithm for the maze creation
         setAlgRunningRef(true); // Need a useRef to get instant changes
         softResetGrid();
         fillGrid();
@@ -334,6 +327,7 @@ function AlgorithmsPage() {
             for(let i = 0; i < Math.ceil(animSpeedRef.current/2); i++) { // This is so the user can decide how fast the animation is
                 if (stack.length === 0 || !algRunningRef.current) {     // It is achieved by running multiple steps at once
                     setAlgRunningRef(false);                    // division by 2 since it is quite fast if not divided
+                    clearAroundEnd();
                     return;
                 }
 
@@ -375,8 +369,181 @@ function AlgorithmsPage() {
         algStep();
     }
 
+    function clearAroundEnd () {
+        setCell(endRow, endCol+1, ""); // I don't like doing this but
+        setCell(endRow+1, endCol, ""); // Without this some mazes are unsolvable
+        setCell(endRow, endCol-1, ""); // Since the alg reaches the end and then
+        setCell(endRow-1, endCol, ""); // is unable to break walls it makes parts unreachable
+                                               // this makes it so it is guaranteed to reach it at least
+                                               // Could make a path then a maze around it, but I don't like that solution either
+    }
+
     const handleHideButton = () => {
         setInstructionsHidden(true)
+    }
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [algSelection, setAlgSelection] = React.useState("Algorithm selection");
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const bfsSelected = () => {
+        setAnchorEl(null);
+        setAlgSelection("Breadth first search (Dijkstra)");
+    };
+
+    const dfsSelected = () => {
+        setAnchorEl(null);
+        setAlgSelection("Depth first search");
+    };
+
+    const aStarSelected = () => {
+        setAnchorEl(null);
+        setAlgSelection("A*");
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    }
+
+    function dfs () {
+        setAlgRunningRef(true); // Need a useRef to get instant changes
+        softResetGrid();
+        const directions = [ // All possible directions (this one does not move diagonally)
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0]
+        ];
+
+        const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+        visited[startRow][startCol] = true;
+        const stack = [];
+        stack.push([startRow, startCol, [[startRow, startCol]]]); // Initiate
+
+        const algStep = () => {
+            for (let i = 0; i < animSpeedRef.current; i++) {    // This is so the user can decide how fast the animation is
+
+                if (stack.length === 0 || !algRunningRef.current) {    // It is achieved by running multiple steps at once
+                    setAlgRunningRef(false);
+                    return;
+                }
+
+                const [currentRow, currentCol, pathSoFar] = stack.pop();
+
+                for (const [dr, dc] of directions) {
+                    const newRow = currentRow + dr;
+                    const newCol = currentCol + dc;
+
+                    if (
+                        newRow >= 0 && newRow < rows &&
+                        newCol >= 0 && newCol < cols &&
+                        !visited[newRow][newCol] &&
+                        grid[newRow][newCol]?.type !== "selected"
+                    ) {
+                        if (grid[newRow][newCol]?.type !== "destination") {
+                            setCell(newRow, newCol, "algSeen");
+                        }
+                        else {
+                            void pathFound(pathSoFar);
+                            return;
+                        }
+                        visited[newRow][newCol] = true;
+                        stack.push([newRow, newCol, [...pathSoFar, [newRow, newCol]]]);
+                    }
+                }
+            }
+            requestAnimationFrame(algStep);
+        };
+
+        algStep();
+    }
+
+    function aStar() {
+        setAlgRunningRef(true); // Need a useRef to get instant changes
+        softResetGrid();
+        const directions = [ // All possible directions (this one does not move diagonally)
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0]
+        ];
+
+        const heuristic = (x,y) => {
+            return Math.sqrt((x - endRow) ** 2 + (y - endCol) ** 2); // Euclidean Distance
+        };
+
+        const g = Array.from({ length: rows }, () => Array(cols).fill(Infinity));
+        const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+        const queue = [];
+        queue.push([heuristic(startRow, startCol), startRow, startCol, [[startRow, startCol]]]);
+
+        g[startRow][startCol] = 0;
+        visited[startRow][startCol] = true;
+
+        const algStep = () => {
+            for(let i = 0; i < animSpeedRef.current; i++) {    // This is so the user can decide how fast the animation is
+                if (queue.length === 0 || !algRunningRef.current) {    // It is achieved by running multiple steps at once
+                    setAlgRunningRef(false);
+                    return;
+                }
+
+                queue.sort((a, b) => a[0] - b[0]);
+                const [, currentRow, currentCol, pathSoFar] = queue.shift();
+
+                // Check if target reached, if yes send it
+                if (grid[currentRow][currentCol]?.type === "destination") {
+                    void pathFound(pathSoFar);
+                    return;
+                }
+
+                // Explore neighbors in all 4 directions
+                for (const [dr, dc] of directions) {
+                    const newRow = currentRow + dr;
+                    const newCol = currentCol + dc;
+
+                    if (
+                        newRow >= 0 && newRow < rows &&
+                        newCol >= 0 && newCol < cols &&
+                        !visited[newRow][newCol] &&
+                        grid[newRow][newCol]?.type !== "selected"
+                    ) {
+                        const temp = g[currentRow][currentCol] + 1; // moving cost
+                        if(temp < g[newRow][newCol]) {
+                            if (grid[newRow][newCol]?.type !== "destination") {
+                                setCell(newRow, newCol, "algSeen");
+                            }
+                            g[newRow][newCol] = temp;
+                            const f = temp + heuristic(newRow, newCol);
+                            visited[newRow][newCol] = true;
+                            queue.push([f, newRow, newCol, [...pathSoFar, [newRow, newCol]]]);
+                        }
+                    }
+                }
+            }
+            requestAnimationFrame(algStep);
+        };
+
+        algStep();
+    }
+
+    function runAlgorithm() {
+        switch (algSelection) {
+            case "Breadth first search (Dijkstra)":
+                bfs();
+                break;
+            case "Depth first search":
+                dfs();
+                break;
+            case "A*":
+                aStar();
+                break;
+            default:
+                bfs();
+                break;
+        }
     }
 
     return (
@@ -453,7 +620,34 @@ function AlgorithmsPage() {
                         </Typography>
                     </Box>
                 </Box>
-                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={bfs}>Run BFS</Button>
+
+                <Button
+                    color="inherit"
+                    variant="outlined"
+                    id="basic-button"
+                    aria-controls={open ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    style={{marginRight: 1 + 'em'}}
+                    onClick={handleClick}
+                >
+                    {algSelection}
+                </Button>
+                <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'basic-button',
+                    }}
+                >
+                    <MenuItem onClick={bfsSelected}>Breadth first search (Dijkstra)</MenuItem>
+                    <MenuItem onClick={dfsSelected}>Depth first search</MenuItem>
+                    <MenuItem onClick={aStarSelected}>A star</MenuItem>
+                </Menu>
+
+                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={runAlgorithm}>Run algorithm</Button>
                 <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={mazeCreator}>Generate maze</Button>
                 <Button variant="outlined" color="inherit" onClick={resetGrid}>Clear</Button>
             </Box>
