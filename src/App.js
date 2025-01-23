@@ -95,7 +95,7 @@ function App() {
                     </div>
                     <div>
                         <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
-                        <SnackBarWrapper></SnackBarWrapper>
+                        <SnackBarWrapper/>
                     </div>
                 </Toolbar>
             </AppBar>
