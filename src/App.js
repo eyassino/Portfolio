@@ -8,8 +8,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import {Alert, Box, Snackbar, Typography} from "@mui/material";
+import {Box, Typography} from "@mui/material";
 import PropTypes from "prop-types";
+import SnackBarWrapper from "./snackBarWrapper";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -69,22 +70,11 @@ function App() {
         }
     };
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-
-    const handleEmailPress = () => {
-        navigator.clipboard.writeText("emil.yassinov@gmail.com");
-        setSnackbarOpen(true);
-    }
-
-    const handleSnackbarClose = () => {
-        setSnackbarOpen(false);
-    }
-
     return (
         <div className="main-body">
             <AppBar position="static">
                 <Toolbar sx={{ justifyContent: "space-between" }}>
-                    <div className="centered-name">Emil Yassinov</div>
+                    <div className="centered-name">Welcome!</div>
 
                     <div style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
                         <Tabs
@@ -105,21 +95,7 @@ function App() {
                     </div>
                     <div>
                         <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
-                        <Button variant="outlined" onClick={handleEmailPress} color="inherit">Email: emil.yassinov@gmail.com</Button>
-                            <Snackbar
-                                open={snackbarOpen}
-                                onClose={handleSnackbarClose}
-                                autoHideDuration={1000}
-                                anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                                style={{
-                                    position: "absolute",
-                                    top: "110%",
-                                }}
-                            >
-                                <Alert icon={false}>
-                                    Copied!
-                                </Alert>
-                            </Snackbar>
+                        <SnackBarWrapper></SnackBarWrapper>
                     </div>
                 </Toolbar>
             </AppBar>
