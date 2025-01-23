@@ -24,6 +24,7 @@ function MainPage() {
                               • SQL 📋
                               • Python 🐍
                               • C ⚙️
+                              • Selenium 🤖
                               
                               Some frameworks that I have worked with before:
                               • React ⚛️
