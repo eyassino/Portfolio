@@ -25,14 +25,12 @@ function MainPage() {
                               • Python 🐍
                               • C ⚙️
                               • Selenium 🤖
+                              • Kotlin 📱
                               
                               Some frameworks that I have worked with before:
                               • React ⚛️
                               • Play ▶️
-                              • Bootstrap 🥾
-                              • Kotlin 📱`;
-
-
+                              • Bootstrap 🥾`;
 
     const showInfoBox = () => {
         setTypingIsDone(true);
