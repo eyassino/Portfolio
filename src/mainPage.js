@@ -32,6 +32,18 @@ function MainPage() {
                               • Play ▶️
                               • Bootstrap 🥾`;
 
+    const hobbyText = `Some things about me:
+    
+                              • I was an intern at GlobalVision where I created an automation project from scratch using selenium in Node.js ⬢
+                              
+                              • Previously I was a software developer at SpryPoint where I worked on a web application with a focus on mobile portability 📱
+                              
+                              • In my spare time one of my favourite hobbies includes playing video games 🎮
+                             
+                              • I ranked pretty highly in a game called League of Legends achieving Master rank and Diamond in Starcraft 2 🏆
+                              
+                              • I like traveling and have been in 4 different countries so far and to 5 of the provinces in Canada 🌍`;
+
     const showInfoBox = () => {
         setTypingIsDone(true);
     };
@@ -66,10 +78,20 @@ function MainPage() {
                         />
                     )}
                     {aboutBoxState && (
-                        <TextBox
-                            content={aboutText}
-                            onClick={handleAboutClick}
-                        />
+
+                            <React.Fragment>
+                            <TextBox
+                                content={aboutText}
+                                onClick={handleAboutClick}
+                                direction={"up"}
+                            />
+                            <TextBox
+                                content={hobbyText}
+                                onClick={handleAboutClick}
+                                direction={"down"}
+                            />
+                            </React.Fragment>
+
                     )}
                     <AboutSection/>
                 </React.Fragment>

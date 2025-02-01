@@ -74,7 +74,7 @@ function App() {
         <div className="main-body">
             <AppBar position="static">
                 <Toolbar sx={{ justifyContent: "space-between" }}>
-                    <div className="centered-name">Welcome!</div>
+                    <div></div>
 
                     <div style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
                         <Tabs
