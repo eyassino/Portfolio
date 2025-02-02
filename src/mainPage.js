@@ -10,6 +10,7 @@ function MainPage() {
     const [aboutBoxState, setAboutBoxState] = useState(false);
 
     const midText = `In this website you will find some personal projects that I worked on, I will be adding more as I finish them.
+    
                     Currently there is only the algorithm search project available without redirection, you can find it by clicking on the button at the top toolbar.
                     
                     Thanks for checking this page out and please don't hesitate to reach out!`;
@@ -67,9 +68,7 @@ function MainPage() {
 
     return (
         <div className="App">
-            <div className="default-padding">
-                <TypingText typingDone={showInfoBox}/>
-            </div>
+            <TypingText typingDone={showInfoBox}/>
             {typingIsDone && (
                 <React.Fragment>
                     {!aboutBoxState &&(

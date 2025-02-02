@@ -25,8 +25,7 @@ code {
 }
 
 .default-padding {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    margin-bottom: 1%;
 }
 
 .main-body {
@@ -49,8 +48,8 @@ code {
     background-color: #1d262b;
     border: 1px solid white;
     font-family: Verdana;
-    padding: 20px;
-    margin: 20px calc(20px + 40vmin);
+    padding: 1%;
+    margin: 1% calc(1% + 40vmin);
     font-size: calc(5px + 2vmin);
     text-align: left;
 }
@@ -64,7 +63,7 @@ code {
     background-color: #1d262b;
     border: 1px solid white;
     font-family: Verdana;
-    padding: 20px;
+    padding: 1%;
     font-size: calc(5px + 2vmin);
     transition: 1s;
     border-radius: 0 20px 20px 0;
@@ -77,7 +76,7 @@ code {
     background-color: #1d262b;
     border: 1px solid white;
     font-family: Verdana;
-    padding: 20px;
+    padding: 1%;
     font-size: calc(5px + 2vmin);
 }
 
@@ -85,7 +84,7 @@ code {
     background-color: #1d262b;
     animation: bounceOut 1s ease-out forwards;
     border: 1px solid white;
-    padding: 20px;
+    padding: 1%;
 }
 
 @keyframes bounceIn {
@@ -186,4 +185,60 @@ code {
     font-size: 60%;
     font-family: Verdana;
     user-select:none !important;
+}
+
+/*main page*/
+@media (max-width: 1000px) {
+    .information-box {
+        margin: 20px 10px;
+        font-size: calc(4px + 2vmin);
+    }
+
+    .about-box {
+        width: 20%;
+        height: 5%;
+        font-size: calc(4px + 2vmin);
+    }
+
+    .about-box.start {
+        width: 20%;
+        height: 5%;
+        font-size: calc(4px + 2vmin);
+    }
+
+    .about-box.clicked {
+        width: 20%;
+        height: 5%;
+        font-size: calc(4px + 2vmin);
+    }
+
+    .algorithm-box {
+        margin: 20px 10px;
+    }
+
+    .MuiTab-root {
+        min-width: 48px !important;
+        width: 90px;
+    }
+}
+
+@media (max-width: 500px) {
+    .information-box {
+        margin: 20px 5px;
+        font-size: calc(5px + 3vmin);
+    }
+
+    .about-box {
+        width: 30%;
+        height: 30%;
+        font-size: calc(3px + 2vmin);
+    }
+
+    .algorithm-box {
+        margin: 20px 5px;
+    }
+
+    .MuiTab-root {
+        width: 72px;
+    }
 }

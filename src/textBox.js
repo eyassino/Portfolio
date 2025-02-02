@@ -27,6 +27,8 @@ function FadeIn({ children, style }) {
 
 function TextBox({ content, onMouseEnter, onClick, direction}) {
     const [scroll, setScroll] = useState(0);
+    const [startY, setStartY] = useState(0);
+
     useEffect(() => {
         const handleScroll = (e) => {
             // Prevent the default scroll behavior
@@ -34,16 +36,33 @@ function TextBox({ content, onMouseEnter, onClick, direction}) {
 
             setScroll((prevScrollY) => {
                 const newScrollY = prevScrollY + e.deltaY * 0.5;
-                return Math.max(0, Math.min(newScrollY, 120)); // uses percentage, but since the boxes are unequel sizes
+                return Math.max(0, Math.min(newScrollY, 110)); // uses percentage, but since the boxes are unequel sizes
             });                                                      // the percent max is 120
         };
 
+        const handleTouchStart = (e) => {
+            setStartY(e.touches[0].clientY);
+        };
+
+        const handleTouch = (e) => { // mobile scroll
+            e.preventDefault();
+            const deltaY = startY - e.touches[0].clientY;
+            setScroll((prevScrollY) => {
+                const newScrollY = prevScrollY + deltaY * 0.5;
+                return Math.max(0, Math.min(newScrollY, 110));
+            });
+        }
+
         window.addEventListener('wheel', handleScroll);
+        window.addEventListener('touchmove', handleTouch);
+        window.addEventListener('touchstart', handleTouchStart);
 
         return () => {
             window.removeEventListener('wheel', handleScroll);
+            window.addEventListener('touchmove', handleTouch);
+            window.addEventListener('touchstart', handleTouchStart);
         }
-    }, []);
+    }, [startY]);
 
     return(
         <FadeIn style={{transform: direction === "up" ? `translateY(${scroll}%)` : direction === "down" ? `translateY(-${scroll}%)` : ``}}>

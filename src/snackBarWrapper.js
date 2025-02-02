@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 
 function SnackbarWrapper() {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [isMobile] = useState(window.innerWidth <= 768);
 
     const handleEmailPress = () => {
         navigator.clipboard.writeText("emil.yassinov@gmail.com");
@@ -17,7 +18,13 @@ function SnackbarWrapper() {
 
     return (
         <React.Fragment>
-            <Button variant="outlined" onClick={handleEmailPress} color="inherit">Email: emil.yassinov@gmail.com</Button>
+            <Button
+                variant="outlined"
+                onClick={handleEmailPress}
+                color="inherit"
+            >
+                {isMobile ? `Email` : `Email: emil.yassinov@gmail.com`}
+            </Button>
             <Snackbar
                 open={snackbarOpen}
                 onClose={handleSnackbarClose}
