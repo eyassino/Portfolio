@@ -37,7 +37,7 @@ function MainPage() {
     
                               • I was an intern at GlobalVision where I created an automation project from scratch using selenium in Node.js ⬢
                               
-                              • Previously I was a software developer at SpryPoint where I worked on a web application with a focus on mobile portability 📱
+                              • Previously I was a software developer at SpryPoint where I worked on a web application with a focus on mobile portability, even this site is mobile friendly, try it! 📱
                               
                               • In my spare time one of my favourite hobbies includes playing video games 🎮
                              

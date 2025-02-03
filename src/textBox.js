@@ -36,7 +36,7 @@ function TextBox({ content, onMouseEnter, onClick, direction}) {
 
             setScroll((prevScrollY) => {
                 const newScrollY = prevScrollY + e.deltaY * 0.5;
-                return Math.max(0, Math.min(newScrollY, 110)); // uses percentage, but since the boxes are unequel sizes
+                return Math.max(0, Math.min(newScrollY, 120)); // uses percentage, but since the boxes are unequel sizes
             });                                                      // the percent max is 120
         };
 
@@ -49,7 +49,7 @@ function TextBox({ content, onMouseEnter, onClick, direction}) {
             const deltaY = startY - e.touches[0].clientY;
             setScroll((prevScrollY) => {
                 const newScrollY = prevScrollY + deltaY * 0.5;
-                return Math.max(0, Math.min(newScrollY, 110));
+                return Math.max(0, Math.min(newScrollY, 105));
             });
         }
 

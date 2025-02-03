@@ -5,14 +5,20 @@ import Button from "@mui/material/Button";
 import {Box, Menu, MenuItem, Slider, Typography} from "@mui/material";
 
 function AlgorithmsPage() {
+    const [isMobile] = useState(window.innerWidth <= 768);
     let cols;
     let rows;
-    let boxSize = 25;
+    let boxSize = isMobile ? 12 : 25;
 
     let windowWidth = window.innerWidth;
     let windowHeight = window.innerHeight;
     cols = Math.floor(windowWidth / boxSize / 1.5);
     rows = Math.floor(windowHeight / boxSize / 1.5);
+
+    if (isMobile){
+        rows = Math.floor(rows / 1.5);
+    }
+
     const [grid, setGrid] = useState(
         Array.from({ length: rows }, () =>
             Array.from({ length: cols }, () => ({ type: null }))
@@ -174,6 +180,22 @@ function AlgorithmsPage() {
         setHoveredRow(null);
         setHoveredCol(null);
     };
+
+    const handleTouchStart = (e, row, col) => {
+        e.preventDefault();
+        handleMouseDown(row, col);
+    }
+
+    const handleTouchMove = (e, row, col) => {
+        e.preventDefault();
+        handleMouseEnter(row, col);
+    }
+
+    const handleTouchEnd = (e, row, col) => {
+        e.preventDefault();
+        handleMouseUp(row, col);
+        handleMouseLeave();
+    }
 
     function setCell(x, y, type, vital = false) {
         if ((grid[x]?.[y]?.type === "start" || grid[x]?.[y]?.type === "destination") && !vital) {
@@ -383,7 +405,7 @@ function AlgorithmsPage() {
     }
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [algSelection, setAlgSelection] = React.useState("Algorithm selection");
+    const [algSelection, setAlgSelection] = React.useState(isMobile ? "Alg Select" : "Algorithm selection");
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -560,12 +582,15 @@ function AlgorithmsPage() {
                     </h2>
                 </header>
                 <p>Click and drag to draw "walls" that act as blockers to the algorithm, click and drag again to remove them.
+                    <br/>
                     <br/>The
                     <span style={{color: "green"}}> green </span>
                     cell is the start,
                     <span style={{color: "red"}}> red </span>
                     is the end, you can move them both by click and dragging them.
+                    <br/>
                     <br/>Control the animation speed by using the slider.
+                    <br/>
                     <br/>Run the pathfinding / maze generator algorithm by clicking the respective buttons at the bottom
                 </p>
             </div>
@@ -594,13 +619,16 @@ function AlgorithmsPage() {
                                 onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                                 onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
                                 onMouseUp={() => handleMouseUp(rowIndex, colIndex)}
+                                onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
+                                onTouchMove={(e) => handleTouchMove(e, rowIndex, colIndex)}
+                                onTouchEnd={(e) => handleTouchEnd(e, rowIndex, colIndex)}
                             ></div>
                         );
                     })
                 )}
             </div>
-            <Box justifyContent="center" sx={{ display: '-webkit-box'}}>
-                <Box sx={{ width: 250, marginRight: 1 + 'em'}}>
+            <Box justifyContent="center" sx={{ display: isMobile ? `grid`: '-webkit-box'}}>
+                <Box sx={{ width: 250, marginRight: isMobile ? `0em` : `1em`}}>
                     <Slider
                         aria-label="Animation speed"
                         defaultValue={4}
@@ -620,6 +648,8 @@ function AlgorithmsPage() {
                         </Typography>
                     </Box>
                 </Box>
+                { !isMobile &&
+                <React.Fragment>
 
                 <Button
                     color="inherit"
@@ -633,6 +663,7 @@ function AlgorithmsPage() {
                 >
                     {algSelection}
                 </Button>
+
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}
@@ -647,9 +678,52 @@ function AlgorithmsPage() {
                     <MenuItem onClick={aStarSelected}>A star</MenuItem>
                 </Menu>
 
-                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={runAlgorithm}>Run algorithm</Button>
-                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={mazeCreator}>Generate maze</Button>
+                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={runAlgorithm}>{isMobile ? `Run` : `Run algorithm`}</Button>
+                <Button disabled={algRunning} style={{marginRight: 1 + 'em'}} variant="outlined" color="inherit" onClick={mazeCreator}>{isMobile ? `Maze` : `Generate maze`}</Button>
                 <Button variant="outlined" color="inherit" onClick={resetGrid}>Clear</Button>
+                </React.Fragment>
+                }
+
+                { isMobile &&
+                    <React.Fragment>
+                        <Box>
+                            <Button
+                                color="inherit"
+                                variant="outlined"
+                                id="basic-button"
+                                aria-controls={open ? 'basic-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                style={{marginRight: 1 + 'em'}}
+                                onClick={handleClick}
+                            >
+                                {algSelection}
+                            </Button>
+
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                    'aria-labelledby': 'basic-button',
+                                }}
+                            >
+                                <MenuItem onClick={bfsSelected}>Breadth first search (Dijkstra)</MenuItem>
+                                <MenuItem onClick={dfsSelected}>Depth first search</MenuItem>
+                                <MenuItem onClick={aStarSelected}>A star</MenuItem>
+                            </Menu>
+
+                            <Button disabled={algRunning} style={{float: "right"}} variant="outlined" color="inherit" onClick={runAlgorithm}>Run</Button>
+                        </Box>
+
+                        <Box sx={{marginTop: 1 + 'em'}}>
+                            <Button variant="outlined" style={{float: "right"}} color="inherit" onClick={resetGrid}>Clear</Button>
+                            <Button disabled={algRunning} style={{float: "left"}} variant="outlined" color="inherit" onClick={mazeCreator}>Maze</Button>
+                        </Box>
+                    </React.Fragment>
+                }
+
             </Box>
         </div>
     );

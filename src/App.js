@@ -46,9 +46,9 @@ function a11yProps(index) {
 }
 
 function App() {
-
     const [page, setPage] = useState('Home');
     const [value, setValue] = React.useState(0);
+    const [isMobile] = useState(window.innerWidth <= 768);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -76,7 +76,7 @@ function App() {
                 <Toolbar sx={{ justifyContent: "space-between" }}>
                     <div></div>
 
-                    <div style={{position: "absolute", left: window.innerWidth <= 768 ? "20%" : "50%", transform: "translateX(-50%)"}}>
+                    <div style={{position: "absolute", left: isMobile ? "20%" : "50%", transform: "translateX(-50%)"}}>
                         <Tabs
                             sx={{ justifyContent: "space-between"}}
                             value={value}
@@ -88,10 +88,10 @@ function App() {
                             }}
                             textColor="inherit"
                             aria-label="full width tabs example"
-                            variant={window.innerWidth <= 768 ? "fullWidth" : "centered"}
+                            variant={isMobile ? "fullWidth" : "centered"}
                         >
-                            <Tab label={window.innerWidth <= 768 ? "Main" : "Main page"} {...a11yProps(0)} />
-                            <Tab label={window.innerWidth <= 768 ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
+                            <Tab label={isMobile ? "Main" : "Main page"} {...a11yProps(0)} />
+                            <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
                         </Tabs>
                     </div>
                     <div>
