@@ -36,6 +36,8 @@ function AlgorithmsPage() {
     const [hoveredCol, setHoveredCol] = useState(null);
     const [algRunning, setAlgRunning] = useState(false);
     const [instructionsHidden, setInstructionsHidden] = useState(false);
+    const [algSelected, setAlgSelected] = useState(0);
+    const [touchEvent, setTouchEvent] = useState(false);
 
     const changedDuringDrag = useRef(new Set());
     const algRunningRef = useRef(false);
@@ -94,7 +96,7 @@ function AlgorithmsPage() {
 
     const moveStart = (row, col) => {
         if(grid[row][col]?.type !== "destination") {
-            setCell(startRow, startCol, "", true);
+            setCell(startRow, startCol, null, true);
             setCell(row, col, "start");
             setStartRow(row);
             setStartCol(col);
@@ -106,7 +108,7 @@ function AlgorithmsPage() {
 
     const moveEnd = (row, col) => {
         if(grid[row][col]?.type !== "start") {
-            setCell(endRow, endCol, "", true);
+            setCell(endRow, endCol, null, true);
             setCell(row, col, "destination");
             setEndRow(row);
             setEndCol(col);
@@ -116,7 +118,7 @@ function AlgorithmsPage() {
         }
     };
 
-    const handleMouseDown = (row, col) => {
+    const handleBoxClick = (row, col) => {
         if(!algRunningRef.current) {
             softResetGrid();
             if(grid[row][col]?.type === "start") {
@@ -134,7 +136,7 @@ function AlgorithmsPage() {
         }
     };
 
-    const handleMouseEnter = (row, col) => {
+    const handleBoxEnter = (row, col) => {
         setHoveredRow(row);
         setHoveredCol(col);
 
@@ -143,7 +145,7 @@ function AlgorithmsPage() {
         }
     };
 
-    const handleMouseUp = (row, col) => {
+    const handleBoxUp = (row, col) => {
         if (row > rows && col > cols){
             if (isMovingStart){
                 moveStart(startRow, startCol);
@@ -164,7 +166,7 @@ function AlgorithmsPage() {
         changedDuringDrag.current.clear();
     };
 
-    const handleMouseLeave = () => {
+    const handleBoxLeave = () => {
         if (isMovingStart){
             moveStart(startRow, startCol);
             setIsMovingStart(false);
@@ -181,21 +183,74 @@ function AlgorithmsPage() {
         setHoveredCol(null);
     };
 
-    const handleTouchStart = (e, row, col) => {
-        e.preventDefault();
-        handleMouseDown(row, col);
-    }
+    const handleMouseDown = (row, col) => {
+        if(!touchEvent) {
+            handleBoxClick(row,col);
+        }
+    };
 
-    const handleTouchMove = (e, row, col) => {
-        e.preventDefault();
-        handleMouseEnter(row, col);
-    }
+    const handleMouseEnter = (row, col) => {
+        if(!touchEvent) {
+            handleBoxEnter(row, col);
+        }
+    };
 
-    const handleTouchEnd = (e, row, col) => {
+    const handleMouseUp = (row, col) => {
+        if(!touchEvent) {
+            handleBoxUp(row, col);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if(!touchEvent) {
+            handleBoxLeave();
+        }
+    };
+
+    const handleTouchStart = (e) => {
         e.preventDefault();
-        handleMouseUp(row, col);
-        handleMouseLeave();
-    }
+        setTouchEvent(true);
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element && element.classList.contains('box')) {
+            const [row, col] = element.id.split('-').map(Number);
+            handleBoxClick(row, col);
+            // Set these for proper drag handling
+            setHoveredRow(row);
+            setHoveredCol(col);
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element && element.classList.contains('box')) {
+            const [row, col] = element.id.split('-').map(Number);
+
+            if (row !== hoveredRow || col !== hoveredCol) {
+                setHoveredRow(row);
+                setHoveredCol(col);
+
+                if (isDrawing && !changedDuringDrag.current.has(`${row}-${col}`)) {
+                    toggleBox(row, col);
+                }
+            }
+        }
+    };
+
+    const handleTouchEnd = (e) => {
+        e.preventDefault();
+        setTouchEvent(false);
+        const touch = e.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element && element.classList.contains('box')) {
+            const [row, col] = element.id.split('-').map(Number);
+            handleBoxUp(row, col);
+        }
+        setHoveredRow(null);
+        setHoveredCol(null);
+    };
 
     function setCell(x, y, type, vital = false) {
         if ((grid[x]?.[y]?.type === "start" || grid[x]?.[y]?.type === "destination") && !vital) {
@@ -413,17 +468,25 @@ function AlgorithmsPage() {
 
     const bfsSelected = () => {
         setAnchorEl(null);
-        setAlgSelection("Breadth first search (Dijkstra)");
+        if(!isMobile) {
+            setAlgSelection("Breadth first search (Dijkstra)");
+        }
+        else {
+            setAlgSelection("Breadth first");
+        }
+        setAlgSelected(0);
     };
 
     const dfsSelected = () => {
         setAnchorEl(null);
-        setAlgSelection("Depth first search");
+        setAlgSelection("Depth first");
+        setAlgSelected(1);
     };
 
     const aStarSelected = () => {
         setAnchorEl(null);
         setAlgSelection("A*");
+        setAlgSelected(2);
     };
 
     const handleClose = () => {
@@ -552,14 +615,14 @@ function AlgorithmsPage() {
     }
 
     function runAlgorithm() {
-        switch (algSelection) {
-            case "Breadth first search (Dijkstra)":
+        switch (algSelected) {
+            case 0:
                 bfs();
                 break;
-            case "Depth first search":
+            case 1:
                 dfs();
                 break;
-            case "A*":
+            case 2:
                 aStar();
                 break;
             default:
@@ -607,6 +670,7 @@ function AlgorithmsPage() {
                         return (
                             <div
                                 key={`${rowIndex}-${colIndex}`}
+                                id={`${rowIndex}-${colIndex}`}
                                 className={`box ${boxClass}`}
                                 style={{
                                     backgroundColor:
@@ -619,9 +683,10 @@ function AlgorithmsPage() {
                                 onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                                 onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
                                 onMouseUp={() => handleMouseUp(rowIndex, colIndex)}
-                                onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
-                                onTouchMove={(e) => handleTouchMove(e, rowIndex, colIndex)}
-                                onTouchEnd={(e) => handleTouchEnd(e, rowIndex, colIndex)}
+                                onTouchStart={(e) => handleTouchStart(e)}
+                                onTouchMove={(e) => handleTouchMove(e)}
+                                onTouchEnd={(e) => handleTouchEnd(e)}
+                                onTouchCancel={(e) => handleTouchEnd(e)}
                             ></div>
                         );
                     })
@@ -629,6 +694,16 @@ function AlgorithmsPage() {
             </div>
             <Box justifyContent="center" sx={{ display: isMobile ? `grid`: '-webkit-box'}}>
                 <Box sx={{ width: 250, marginRight: isMobile ? `0em` : `1em`}}>
+                    { isMobile &&
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography>
+                                Slow
+                            </Typography>
+                            <Typography>
+                                Fast
+                            </Typography>
+                        </Box>
+                    }
                     <Slider
                         aria-label="Animation speed"
                         defaultValue={4}
@@ -639,14 +714,16 @@ function AlgorithmsPage() {
                         max={10}
                         onChange={handleSlider}
                     />
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography>
-                            Slow
-                        </Typography>
-                        <Typography>
-                            Fast
-                        </Typography>
-                    </Box>
+                    { !isMobile &&
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography>
+                                Slow
+                            </Typography>
+                            <Typography>
+                                Fast
+                            </Typography>
+                        </Box>
+                    }
                 </Box>
                 { !isMobile &&
                 <React.Fragment>
@@ -709,8 +786,8 @@ function AlgorithmsPage() {
                                     'aria-labelledby': 'basic-button',
                                 }}
                             >
-                                <MenuItem onClick={bfsSelected}>Breadth first search (Dijkstra)</MenuItem>
-                                <MenuItem onClick={dfsSelected}>Depth first search</MenuItem>
+                                <MenuItem onClick={bfsSelected}>Breadth first</MenuItem>
+                                <MenuItem onClick={dfsSelected}>Depth first</MenuItem>
                                 <MenuItem onClick={aStarSelected}>A star</MenuItem>
                             </Menu>
 

@@ -132,6 +132,7 @@ code {
     padding: 20px;
     margin: 20px calc(20px + 40vmin);
     user-select:none !important;
+    touch-action: none !important;
 }
 
 .box {
