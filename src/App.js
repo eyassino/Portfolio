@@ -46,9 +46,9 @@ function a11yProps(index) {
 }
 
 function App() {
-
     const [page, setPage] = useState('Home');
     const [value, setValue] = React.useState(0);
+    const [isMobile] = useState(window.innerWidth <= 768);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -72,13 +72,13 @@ function App() {
 
     return (
         <div className="main-body">
-            <AppBar position="static">
+            <AppBar className="default-padding" position="static">
                 <Toolbar sx={{ justifyContent: "space-between" }}>
                     <div></div>
 
-                    <div style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
+                    <div style={{position: "absolute", left: isMobile ? "20%" : "50%", transform: "translateX(-50%)"}}>
                         <Tabs
-                            sx={{ justifyContent: "space-between" }}
+                            sx={{ justifyContent: "space-between"}}
                             value={value}
                             onChange={handleChange}
                             TabIndicatorProps={{
@@ -88,9 +88,10 @@ function App() {
                             }}
                             textColor="inherit"
                             aria-label="full width tabs example"
+                            variant={isMobile ? "fullWidth" : "centered"}
                         >
-                            <Tab label="Main Page" {...a11yProps(0)} />
-                            <Tab label="Algorithm Project" {...a11yProps(1)} />
+                            <Tab label={isMobile ? "Main" : "Main page"} {...a11yProps(0)} />
+                            <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
                         </Tabs>
                     </div>
                     <div>

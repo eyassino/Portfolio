@@ -10,6 +10,7 @@ function MainPage() {
     const [aboutBoxState, setAboutBoxState] = useState(false);
 
     const midText = `In this website you will find some personal projects that I worked on, I will be adding more as I finish them.
+    
                     Currently there is only the algorithm search project available without redirection, you can find it by clicking on the button at the top toolbar.
                     
                     Thanks for checking this page out and please don't hesitate to reach out!`;
@@ -36,7 +37,7 @@ function MainPage() {
     
                               • I was an intern at GlobalVision where I created an automation project from scratch using selenium in Node.js ⬢
                               
-                              • Previously I was a software developer at SpryPoint where I worked on a web application with a focus on mobile portability 📱
+                              • Previously I was a software developer at SpryPoint where I worked on a web application with a focus on mobile portability, even this site is mobile friendly, try it! 📱
                               
                               • In my spare time one of my favourite hobbies includes playing video games 🎮
                              
@@ -67,9 +68,7 @@ function MainPage() {
 
     return (
         <div className="App">
-            <div className="default-padding">
-                <TypingText typingDone={showInfoBox}/>
-            </div>
+            <TypingText typingDone={showInfoBox}/>
             {typingIsDone && (
                 <React.Fragment>
                     {!aboutBoxState &&(
