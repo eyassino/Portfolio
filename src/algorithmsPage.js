@@ -107,6 +107,7 @@ function AlgorithmsPage() {
     };
 
     const moveEnd = (row, col) => {
+        console.log(grid[row][col]?.type);
         if(grid[row][col]?.type !== "start") {
             setCell(endRow, endCol, null, true);
             setCell(row, col, "destination");
@@ -114,7 +115,7 @@ function AlgorithmsPage() {
             setEndCol(col);
         }
         else{
-            setCell(startRow, startCol, "destination");
+            setCell(endRow, endCol, "destination");
         }
     };
 

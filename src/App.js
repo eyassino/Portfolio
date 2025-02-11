@@ -73,10 +73,9 @@ function App() {
     return (
         <div className="main-body">
             <AppBar className="default-padding" position="static">
-                <Toolbar sx={{ justifyContent: "space-between" }}>
-                    <div></div>
+                <Toolbar sx={{ justifyContent: "space-between", padding: 0}}>
 
-                    <div style={{position: "absolute", left: isMobile ? "20%" : "50%", transform: "translateX(-50%)"}}>
+                    <div style={{ display: "flex"}}>
                         <Tabs
                             sx={{ justifyContent: "space-between"}}
                             value={value}
@@ -94,7 +93,7 @@ function App() {
                             <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
                         </Tabs>
                     </div>
-                    <div>
+                    <div style={{ display: "flex" }}>
                         <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
                         <SnackBarWrapper/>
                     </div>
