@@ -53,6 +53,14 @@ code {
     margin: 1% calc(1% + 40vmin);
     font-size: calc(5px + 2vmin);
     text-align: left;
+    opacity: 0;
+    transform: translateY(5%);
+    transition: transform 0.5s ease-out, opacity 1s ease-out;
+}
+
+.information-box.fade-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .about-box {
