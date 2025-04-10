@@ -1,79 +1,72 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useRef} from "react";
 
-function FadeIn({ children, style }) {
-    const [styles, setStyles] = useState({
-        transform: 'translateY(5%)',
-        opacity: 0,
-        transition: 'transform 1s ease-out, opacity 1s ease-out',
-        ...style,
-    });
+function TextBox({ content, onMouseEnter, onClick, direction }) {
+    const scrollRef = useRef(0);
+    const prevScroll = useRef(0);
+    const boxRef = useRef(null);
+    const maxScroll = useRef(0);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setStyles({
-                transform: 'translateY(0)',
-                opacity: 1,
-                transition: 'transform 1s ease-out, opacity 1s ease-out',
-                ...style,
-            });
-        }, 100);
+        if (boxRef.current) {
+            maxScroll.current = boxRef.current.offsetHeight + 25;
+        }
 
-        return () => clearTimeout(timer);
-    }, [style]);
-
-    return <div style={styles}>{children}</div>;
-}
-
-function TextBox({ content, onMouseEnter, onClick, direction}) {
-    const [scroll, setScroll] = useState(0);
-    const [startY, setStartY] = useState(0);
-
-    useEffect(() => {
         const handleScroll = (e) => {
-            // Prevent the default scroll behavior
             e.preventDefault();
-
-            setScroll((prevScrollY) => {
-                const newScrollY = prevScrollY + e.deltaY * 0.5;
-                return Math.max(0, Math.min(newScrollY, 120)); // uses percentage, but since the boxes are unequel sizes
-            });                                                      // the percent max is 120
+            const delta = -e.deltaY; // Reverse the scrolling to make it feel more natural
+            scrollRef.current = Math.max(-maxScroll.current, Math.min(scrollRef.current + delta, 0));
+            prevScroll.current = scrollRef.current;
+            updateTranslation();
         };
 
         const handleTouchStart = (e) => {
-            setStartY(e.touches[0].clientY);
+            prevScroll.current = e.touches[0].clientY;
         };
 
-        const handleTouch = (e) => { // mobile scroll
+        const handleTouchMove = (e) => {
             e.preventDefault();
-            const deltaY = startY - e.touches[0].clientY;
-            setScroll((prevScrollY) => {
-                const newScrollY = prevScrollY + deltaY * 0.5;
-                return Math.max(0, Math.min(newScrollY, 105));
-            });
-        }
+            const deltaY = -(prevScroll.current - e.touches[0].clientY) * 2;
+            scrollRef.current = Math.max(-maxScroll.current, Math.min(scrollRef.current + deltaY, 0));
+            prevScroll.current = e.touches[0].clientY;
+            updateTranslation();
+        };
 
-        window.addEventListener('wheel', handleScroll);
-        window.addEventListener('touchmove', handleTouch);
-        window.addEventListener('touchstart', handleTouchStart);
+        const updateTranslation = () => {
+            if (boxRef.current) {
+                boxRef.current.style.transform =
+                    direction === "up" ? `translateY(${-scrollRef.current}px)`
+                    : direction === "down" ? `translateY(${scrollRef.current}px)` : ``;
+            }
+        };
+
+        window.addEventListener("wheel", handleScroll);
+        window.addEventListener("touchstart", handleTouchStart);
+        window.addEventListener("touchmove", handleTouchMove);
 
         return () => {
-            window.removeEventListener('wheel', handleScroll);
-            window.addEventListener('touchmove', handleTouch);
-            window.addEventListener('touchstart', handleTouchStart);
-        }
-    }, [startY]);
+            window.removeEventListener("wheel", handleScroll);
+            window.removeEventListener("touchstart", handleTouchStart);
+            window.removeEventListener("touchmove", handleTouchMove);
+        };
+    }, [direction]);
 
-    return(
-        <FadeIn style={{transform: direction === "up" ? `translateY(${scroll}%)` : direction === "down" ? `translateY(-${scroll}%)` : ``}}>
-            <div
-                {...(onClick && {onClick})}
-                {...(onMouseEnter && {onMouseEnter})}
-                className="information-box">
-                <p style={{ whiteSpace: "pre-line"}}>{content}</p>
-            </div>
-        </FadeIn>
-    )
+    useEffect(() => {
+        if (boxRef.current) {
+            boxRef.current.classList.add("fade-in");
+        }
+    }, []);
+
+    return (
+        <div
+            ref={boxRef}
+            {...(onClick && { onClick })}
+            {...(onMouseEnter && { onMouseEnter })}
+            className="information-box"
+        >
+            <p style={{ whiteSpace: "pre-line" }}>{content}</p>
+        </div>
+    );
 }
 
 export default TextBox;
