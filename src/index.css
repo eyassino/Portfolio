@@ -31,7 +31,6 @@ code {
 
 .main-body {
     overflow-x: hidden;
-    background-color: #36454F;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -40,15 +39,19 @@ code {
     color: white;
 }
 
+.background{
+    position: fixed;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+}
+
 .font {
-    font-family: Verdana;
     font-size: 24px;
 }
 
 .information-box {
-    background-color: #1d262b;
     border: 1px solid white;
-    font-family: Verdana;
     padding: 1%;
     margin: 1% calc(1% + 40vmin);
     font-size: calc(5px + 2vmin);
@@ -56,6 +59,7 @@ code {
     opacity: 0;
     transform: translateY(5%);
     transition: transform 0.5s ease-out, opacity 1s ease-out;
+    backdrop-filter: blur(20px);
 }
 
 .information-box.fade-in {
@@ -69,9 +73,8 @@ code {
     top: 50%;
     width: 10%;
     height: 10%;
-    background-color: #1d262b;
+    backdrop-filter: blur(20px);
     border: 1px solid white;
-    font-family: Verdana;
     padding: 1%;
     font-size: calc(5px + 2vmin);
     transition: 1s;
@@ -82,15 +85,12 @@ code {
     width: 10%;
     height: 10%;
     animation: bounceIn 0.5s ease-out forwards;
-    background-color: #1d262b;
     border: 1px solid white;
-    font-family: Verdana;
     padding: 1%;
     font-size: calc(5px + 2vmin);
 }
 
 .about-box.clicked{
-    background-color: #1d262b;
     animation: bounceOut 1s ease-out forwards;
     border: 1px solid white;
     padding: 1%;
@@ -195,7 +195,6 @@ code {
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.7);
     cursor: default;
     font-size: calc(4px + 2vmin);
-    font-family: Verdana;
     user-select:none !important;
 }
 
