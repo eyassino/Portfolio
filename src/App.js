@@ -97,7 +97,7 @@ function App() {
     return (
         <div className="main-body">
             <div className="background" ref={myRef}></div>
-               <AppBar className="default-padding" position="static">
+               <AppBar className="default-padding" position="static" color="transparent" sx={{ backdropFilter: "blur(10px)" }}>
                     <Toolbar sx={{ justifyContent: "space-between", padding: 0}}>
                         <div style={{ display: "flex"}}>
                             <Tabs

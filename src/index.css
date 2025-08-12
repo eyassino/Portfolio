@@ -52,7 +52,6 @@ code {
 }
 
 .information-box {
-    background-color: #1d262b;
     border: 1px solid white;
     font-family: Verdana;
     padding: 1%;
@@ -62,6 +61,7 @@ code {
     opacity: 0;
     transform: translateY(5%);
     transition: transform 0.5s ease-out, opacity 1s ease-out;
+    backdrop-filter: blur(20px);
 }
 
 .information-box.fade-in {
@@ -75,7 +75,7 @@ code {
     top: 50%;
     width: 10%;
     height: 10%;
-    background-color: #1d262b;
+    backdrop-filter: blur(20px);
     border: 1px solid white;
     font-family: Verdana;
     padding: 1%;
@@ -88,7 +88,6 @@ code {
     width: 10%;
     height: 10%;
     animation: bounceIn 0.5s ease-out forwards;
-    background-color: #1d262b;
     border: 1px solid white;
     font-family: Verdana;
     padding: 1%;
@@ -96,7 +95,6 @@ code {
 }
 
 .about-box.clicked{
-    background-color: #1d262b;
     animation: bounceOut 1s ease-out forwards;
     border: 1px solid white;
     padding: 1%;
