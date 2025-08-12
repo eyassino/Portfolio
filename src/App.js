@@ -2,7 +2,7 @@ import './App.css';
 import * as React from 'react';
 import MainPage from './mainPage';
 import AlgorithmsPage from "./algorithmsPage";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
@@ -11,6 +11,7 @@ import Tab from '@mui/material/Tab';
 import {Box, Typography} from "@mui/material";
 import PropTypes from "prop-types";
 import SnackBarWrapper from "./snackBarWrapper";
+import WAVES from "vanta/src/vanta.waves";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -70,37 +71,61 @@ function App() {
         }
     };
 
+    const [vantaEffect, setVantaEffect] = useState(null)
+    const myRef = React.useRef(null)
+    useEffect(() => {
+        if (!vantaEffect) {
+            setVantaEffect(WAVES({
+                el: myRef.current,
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                color: 0x220941,
+                shininess: 10.00,
+                waveHeight: 15.00,
+                waveSpeed: 1.00,
+                zoom: 1.00,
+            }))
+        }
+        return () => {
+            if (vantaEffect) vantaEffect.destroy()
+        }
+    }, [vantaEffect])
+
     return (
         <div className="main-body">
-            <AppBar className="default-padding" position="static">
-                <Toolbar sx={{ justifyContent: "space-between", padding: 0}}>
-
-                    <div style={{ display: "flex"}}>
-                        <Tabs
-                            sx={{ justifyContent: "space-between"}}
-                            value={value}
-                            onChange={handleChange}
-                            TabIndicatorProps={{
-                                style: {
-                                    backgroundColor: "white"
-                                }
-                            }}
-                            textColor="inherit"
-                            aria-label="full width tabs example"
-                            variant={isMobile ? "fullWidth" : "centered"}
-                        >
-                            <Tab label={isMobile ? "Main" : "Main page"} {...a11yProps(0)} />
-                            <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
-                        </Tabs>
-                    </div>
-                    <div style={{ display: "flex" }}>
-                        <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
-                        <SnackBarWrapper/>
-                    </div>
-                </Toolbar>
-            </AppBar>
+            <div className="background" ref={myRef}></div>
+               <AppBar className="default-padding" position="static">
+                    <Toolbar sx={{ justifyContent: "space-between", padding: 0}}>
+                        <div style={{ display: "flex"}}>
+                            <Tabs
+                                sx={{ justifyContent: "space-between"}}
+                                value={value}
+                                onChange={handleChange}
+                                TabIndicatorProps={{
+                                    style: {
+                                        backgroundColor: "white"
+                                    }
+                                }}
+                                textColor="inherit"
+                                aria-label="full width tabs example"
+                                variant={isMobile ? "fullWidth" : "centered"}
+                            >
+                                <Tab label={isMobile ? "Main" : "Main page"} {...a11yProps(0)} />
+                                <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
+                            </Tabs>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <Button style={{marginRight: 1 + 'em'}} variant="outlined" href="https://www.linkedin.com/in/emil-yassinov-8aa6b21a0/" target="_blank" rel="noopener noreferrer" color="inherit">LinkedIn</Button>
+                            <SnackBarWrapper/>
+                        </div>
+                    </Toolbar>
+                </AppBar>
             {renderPage()}
         </div>
+
     );
 }
 
