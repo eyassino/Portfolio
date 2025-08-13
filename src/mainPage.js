@@ -4,9 +4,8 @@ import TypingText from "./typing";
 import {useState} from "react";
 import TextBox from "./textBox";
 
-function MainPage() {
+function MainPage({ typingIsDone, setTypingIsDone }) {
 
-    const [typingIsDone, setTypingIsDone] = useState(false);
     const [aboutBoxState, setAboutBoxState] = useState(false);
 
     const midText = `In this website you will find some personal projects that I worked on, I will be adding more as I finish them.
@@ -45,10 +44,6 @@ function MainPage() {
                               
                               • I like traveling and have been in 4 different countries so far and to 5 of the provinces in Canada 🌍`;
 
-    const showInfoBox = () => {
-        setTypingIsDone(true);
-    };
-
     async function handleAboutClick() {
         setAboutBoxState(!aboutBoxState);
     }
@@ -66,9 +61,13 @@ function MainPage() {
         );
     }
 
+    function showInfoBox() {
+        setTypingIsDone(true);
+    }
+
     return (
         <div className="App">
-            <TypingText typingDone={showInfoBox}/>
+            <TypingText typingDone={showInfoBox} typingIsDone={typingIsDone}/>
             {typingIsDone && (
                 <React.Fragment>
                     {!aboutBoxState &&(

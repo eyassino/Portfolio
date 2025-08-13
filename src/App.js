@@ -2,7 +2,7 @@ import './App.css';
 import * as React from 'react';
 import MainPage from './mainPage';
 import AlgorithmsPage from "./algorithmsPage";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
@@ -48,8 +48,9 @@ function a11yProps(index) {
 
 function App() {
     const [page, setPage] = useState('Home');
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = useState(0);
     const [isMobile] = useState(window.innerWidth <= 768);
+    const [typingIsDone, setTypingIsDone] = useState(false);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -63,20 +64,20 @@ function App() {
     const renderPage = () => {
         switch (page) {
             case 'MainPage':
-                return <MainPage />;
+                return <MainPage typingIsDone={typingIsDone} setTypingIsDone={setTypingIsDone}/>;
             case 'AlgorithmsPage':
                 return <AlgorithmsPage />;
             default:
-                return <MainPage />;
+                return <MainPage typingIsDone={typingIsDone} setTypingIsDone={setTypingIsDone}/>;
         }
     };
 
     const [vantaEffect, setVantaEffect] = useState(null)
-    const myRef = React.useRef(null)
+    const waveRef = useRef(null)
     useEffect(() => {
         if (!vantaEffect) {
             setVantaEffect(WAVES({
-                el: myRef.current,
+                el: waveRef.current,
                 mouseControls: true,
                 touchControls: true,
                 gyroControls: false,
@@ -96,7 +97,7 @@ function App() {
 
     return (
         <div className="main-body">
-            <div className="background" ref={myRef}></div>
+            <div className="background" ref={waveRef}></div>
                <AppBar className="default-padding" position="static" color="transparent" sx={{ backdropFilter: "blur(10px)" }}>
                     <Toolbar sx={{ justifyContent: "space-between", padding: 0}}>
                         <div style={{ display: "flex"}}>

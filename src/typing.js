@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 const TypingText = ({
-                      typingDone = () => {}
+                      typingDone = () => {},
+                      typingIsDone = false
                     }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [phase, setPhase] = useState("typing"); // "typing", "deleting", or "final"
-  const [isDone, setIsDone] = useState(false);
   const [showCursor, setShowCursor] = useState(true); // Blinking cursor state
+  const [cursorBlink, setCursorBlink] = useState(false); // Blinking cursor state
+  const isDone = useRef(false);
 
   const eraseText = "Hello! My nam";
   const finalText = "Hi. I'm Emil :)";
@@ -16,23 +18,23 @@ const TypingText = ({
   const pauseTime = 600;
   const cursorBlinkSpeed = 500;
 
-
   useEffect(() => {
-    if (isDone){
-      typingDone();
+    if (typingIsDone) {
+      setDisplayedText(finalText);
+      setCursorBlink(true);
       return;
     }
 
     const interval = setInterval(() => {
-      if (phase === "typing" && currentIndex < eraseText.length && !isDone) {
+      if (phase === "typing" && currentIndex < eraseText.length && !typingIsDone) {
         // Typing the eraseText
         setDisplayedText((prev) => prev + eraseText[currentIndex]);
         setCurrentIndex((prevIndex) => prevIndex + 1);
-      } else if (phase === "deleting" && currentIndex > 0 && !isDone) {
+      } else if (phase === "deleting" && currentIndex > 0 && !typingIsDone) {
         // Erasing the eraseText
         setDisplayedText((prev) => prev.slice(0, -1));
         setCurrentIndex((prevIndex) => prevIndex - 1);
-      } else if (phase === "final" && currentIndex < finalText.length && !isDone) {
+      } else if (phase === "final" && currentIndex < finalText.length && !typingIsDone) {
         // Typing the finalText
         setDisplayedText((prev) => prev + finalText[currentIndex]);
         setCurrentIndex((prevIndex) => prevIndex + 1);
@@ -50,24 +52,24 @@ const TypingText = ({
             setCurrentIndex(0);
           }, pauseTime);
         } else if (phase === "final" && currentIndex === finalText.length) {
-          setIsDone(true);
+          isDone.current = true;
+          setCursorBlink(true);
+          typingDone();
         }
       }
     }, phase === "deleting" ? eraseSpeed : speed);
 
     return () => clearInterval(interval);
-  }, [currentIndex, phase, isDone, eraseText, finalText, speed, eraseSpeed, pauseTime, typingDone]);
+  }, [currentIndex, phase, typingIsDone, typingDone]);
 
-  // Blinking cursor logic
   useEffect(() => {
-    if(isDone) {
-      const cursorInterval = setInterval(() => {
-        setShowCursor((prev) => !prev);
-      }, cursorBlinkSpeed);
-
+          const cursorInterval = setInterval(() => {
+              if(cursorBlink){
+                setShowCursor((prev) => !prev);
+              }
+          }, cursorBlinkSpeed);
       return () => clearInterval(cursorInterval);
-    }
-  }, [cursorBlinkSpeed, isDone]);
+  }, [cursorBlinkSpeed, cursorBlink]);
 
   return(
       <span>
