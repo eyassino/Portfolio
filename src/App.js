@@ -112,7 +112,7 @@ function App() {
                                 }}
                                 textColor="inherit"
                                 aria-label="full width tabs example"
-                                variant={isMobile ? "fullWidth" : "centered"}
+                                variant={isMobile ? "fullWidth" : "standard"}
                             >
                                 <Tab label={isMobile ? "Main" : "Main page"} {...a11yProps(0)} />
                                 <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />

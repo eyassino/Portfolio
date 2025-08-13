@@ -36,7 +36,7 @@ function SnackbarWrapper() {
 
     return (
         <React.Fragment>
-            <input type="text" value="emil.yassinov@gmail.com" id="emailIn" hidden={true}/>
+            <input readOnly={true} type="text" value="emil.yassinov@gmail.com" id="emailIn" hidden={true}/>
             <Button
                 variant="outlined"
                 onClick={handleEmailPress}
