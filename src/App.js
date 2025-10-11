@@ -1,7 +1,8 @@
 import './App.css';
 import * as React from 'react';
-import MainPage from './mainPage';
-import AlgorithmsPage from "./algorithmsPage";
+import MainPage from './Pages/mainPage';
+import AlgorithmsPage from "./Pages/algorithmsPage";
+import PromptedPage from "./Pages/promptedPage";
 import {useEffect, useRef, useState} from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -10,7 +11,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import {Box, Typography} from "@mui/material";
 import PropTypes from "prop-types";
-import SnackBarWrapper from "./snackBarWrapper";
+import SnackBarWrapper from "./Helper/snackBarWrapper";
 import WAVES from "vanta/src/vanta.waves";
 
 function TabPanel(props) {
@@ -58,6 +59,8 @@ function App() {
             setPage('MainPage');
         } else if (newValue === 1) {
             setPage('AlgorithmsPage');
+        } else if (newValue === 2) {
+            setPage('PromptedPage');
         }
     };
 
@@ -67,6 +70,8 @@ function App() {
                 return <MainPage typingIsDone={typingIsDone} setTypingIsDone={setTypingIsDone}/>;
             case 'AlgorithmsPage':
                 return <AlgorithmsPage />;
+            case 'PromptedPage':
+                return <PromptedPage />;
             default:
                 return <MainPage typingIsDone={typingIsDone} setTypingIsDone={setTypingIsDone}/>;
         }
@@ -111,11 +116,12 @@ function App() {
                                     }
                                 }}
                                 textColor="inherit"
-                                aria-label="full width tabs example"
+                                aria-label="full width tabs"
                                 variant={isMobile ? "fullWidth" : "standard"}
                             >
                                 <Tab label={isMobile ? "Main" : "Main page"} {...a11yProps(0)} />
                                 <Tab label={isMobile ? "Alg project" : "Algorithm Project"} {...a11yProps(1)} />
+                                <Tab label="Prompted game" {...a11yProps(1)} />
                             </Tabs>
                         </div>
                         <div style={{ display: "flex" }}>

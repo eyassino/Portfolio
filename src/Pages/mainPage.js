@@ -1,8 +1,8 @@
-import './App.css';
+import '../App.css';
 import * as React from 'react';
-import TypingText from "./typing";
+import TypingText from "../Helper/typing";
 import {useState} from "react";
-import TextBox from "./textBox";
+import TextBox from "../Helper/textBox";
 
 function MainPage({ typingIsDone, setTypingIsDone }) {
 
