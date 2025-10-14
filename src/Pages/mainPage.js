@@ -10,7 +10,9 @@ function MainPage({ typingIsDone, setTypingIsDone }) {
 
     const midText = `In this website you will find some personal projects that I worked on, I will be adding more as I finish them.
     
-                    Currently there is only the algorithm search project available without redirection, you can find it by clicking on the button at the top toolbar.
+                    Currently there are two projects, the path finding algorithm project available without redirection, you can find it by clicking on the button at the top toolbar.
+                    
+                    There is also the Prompted game project, which is a social deduction game meant for 3+ players, you can also find it at the top toolbar but it is hosted on a different page.
                     
                     Thanks for checking this page out and please don't hesitate to reach out!`;
 
