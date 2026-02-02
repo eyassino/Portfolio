@@ -13,8 +13,8 @@ function PromptedPage() {
     return (
         <React.Fragment>
         <img
-            style={{height: isMobile ? "95%" : "50%", width: isMobile ? "95%" : "50%"}}
-            src={require('../Assets/Prompted.png')}
+            style={{height: isMobile ? "95%" : "45%", width: isMobile ? "95%" : "45%"}}
+            src={require('../Assets/PromptedGIF.gif')}
             alt="Prompted game screenshot"
         ></img>
         <TextBox
@@ -24,8 +24,9 @@ function PromptedPage() {
             href="https://eyassino.github.io/Prompted/"
             underline="always"
             color="inherit"
+            target="_blank"
         >
-            {`Prompted live page`}
+            {`Check out the live page here!`}
         </Link>
         </React.Fragment>
     );

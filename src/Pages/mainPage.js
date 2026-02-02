@@ -42,7 +42,7 @@ function MainPage({ typingIsDone, setTypingIsDone }) {
                               
                               • In my spare time one of my favourite hobbies includes playing video games 🎮
                              
-                              • I ranked pretty highly in a game called League of Legends achieving Master rank and Diamond in Starcraft 2 🏆
+                              • I ranked pretty highly in a game called League of Legends achieving Master rank, also achieved a similar rank in Starcraft 2 🏆
                               
                               • I like traveling and have been in 4 different countries so far and to 5 of the provinces in Canada 🌍`;
 
