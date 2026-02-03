@@ -11,3 +11,6 @@ To see the live page: https://eyassino.github.io/Portfolio/
     <br/>&nbsp;- Depth first search
     <br/>&nbsp;- Breadth first search (Identical to Dijkstra's in this case with no weights)
     <br/>&nbsp;- A*
+
+# Social deduction web game Prompted:
+  Prompted is a social deduction game where one person receives a prompt that is different than the rest and the others need to guess who that is.
